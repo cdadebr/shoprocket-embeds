@@ -119,8 +119,10 @@ style="color: #959595;"
 <!-- Include Shoprocket JS -->
 <script async src="https://cdn.shoprocket.io/loader.js"></script>
 
-  <!-- Updated MutationObserver to detect when Shoprocket content is loaded -->
+  <!-- Update Swiper after Shoprocket is fully loaded and resized -->
   <script type="text/javascript">
+    var swiper; // Global swiper instance
+
     function initializeSwiper() {
       if (window.swiperInitialized) return;
       window.swiperInitialized = true;
@@ -128,11 +130,11 @@ style="color: #959595;"
       console.log("Initializing Swiper...");
 
       // Initialize Swiper
-      var swiper = new Swiper('.swiper-container', {
-        slidesPerView: 1, // Number of slides to show
-        spaceBetween: 10, // Space between slides in px
-        loop: true, // Enable continuous loop mode
-        autoHeight: true, // Enable auto height
+      swiper = new Swiper('.swiper-container', {
+        slidesPerView: 1,
+        spaceBetween: 10,
+        loop: true,
+        autoHeight: true,
         pagination: {
           el: '.swiper-pagination',
           clickable: true,
@@ -144,22 +146,32 @@ style="color: #959595;"
       });
     }
 
-    // MutationObserver to detect changes when Shoprocket content is loaded
+    // Function to update swiper
+    function updateSwiper() {
+      if (swiper) {
+        console.log("Updating Swiper...");
+        swiper.update(); // Manually update swiper layout
+      }
+    }
+
+    // MutationObserver to detect when Shoprocket content is fully loaded
     var observer = new MutationObserver(function(mutationsList, observer) {
       for (var mutation of mutationsList) {
-        // Check for the presence of the Shoprocket product iframe or inner content
         var shoprocketElementsLoaded = document.querySelectorAll('.sr-element-wrap .sr-item-inner').length;
 
         if (shoprocketElementsLoaded > 0) {
           console.log("Shoprocket content loaded");
-          initializeSwiper(); // Initialize Swiper when all Shoprocket content is ready
-          observer.disconnect(); // Stop observing once done
+          initializeSwiper(); // Initialize Swiper
+          
+          // Wait a moment and update swiper after Shoprocket content settles
+          setTimeout(updateSwiper, 500); // Adjust delay as needed
+          observer.disconnect(); // Stop observing
           break;
         }
       }
     });
 
-    // Start observing the document for added nodes inside the body
+    // Start observing the document for added nodes
     observer.observe(document.body, {
       childList: true,
       subtree: true
