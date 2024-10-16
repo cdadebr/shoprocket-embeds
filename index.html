@@ -119,10 +119,10 @@ style="color: #959595;"
 <!-- Include Shoprocket JS -->
 <script async src="https://cdn.shoprocket.io/loader.js"></script>
 
-<!-- Initialize Swiper -->
-<script type="text/javascript">
-    window.addEventListener('Shoprocket.ready', () => {
-      console.log('Shoprocket is ready!');
+  <!-- MutationObserver to detect when Shoprocket content is loaded -->
+  <script type="text/javascript">
+    function initializeSwiper() {
+      console.log("Initializing Swiper...");
 
       // Initialize Swiper
       var swiper = new Swiper('.swiper-container', {
@@ -139,7 +139,31 @@ style="color: #959595;"
           prevEl: '.swiper-button-prev',
         },
       });
+    }
+
+    // Observe the DOM for changes (when Shoprocket content loads)
+    var targetNode = document.querySelector('.swiper-wrapper');
+    var observerOptions = {
+      childList: true,
+      subtree: true,
+    };
+
+    var observer = new MutationObserver(function(mutationsList, observer) {
+      // Check if Shoprocket elements have been added to the DOM
+      for (var mutation of mutationsList) {
+        if (mutation.addedNodes.length) {
+          var shoprocketElementsLoaded = document.querySelectorAll('.sr-products iframe').length;
+          if (shoprocketElementsLoaded) {
+            console.log("Shoprocket content detected");
+            initializeSwiper();
+            observer.disconnect(); // Stop observing after Swiper is initialized
+            break;
+          }
+        }
+      }
     });
+
+    observer.observe(targetNode, observerOptions);
   </script>
 </body>
 </html>
