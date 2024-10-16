@@ -119,9 +119,12 @@ style="color: #959595;"
 <!-- Include Shoprocket JS -->
 <script async src="https://cdn.shoprocket.io/loader.js"></script>
 
-  <!-- MutationObserver to detect when Shoprocket content is loaded -->
+  <!-- Updated MutationObserver -->
   <script type="text/javascript">
+    // Function to initialize Swiper
     function initializeSwiper() {
+      if (window.swiperInitialized) return;
+      window.swiperInitialized = true;
       console.log("Initializing Swiper...");
 
       // Initialize Swiper
@@ -141,29 +144,22 @@ style="color: #959595;"
       });
     }
 
-    // Observe the DOM for changes (when Shoprocket content loads)
-    var targetNode = document.querySelector('.swiper-wrapper');
-    var observerOptions = {
-      childList: true,
-      subtree: true,
-    };
-
+    // MutationObserver to detect changes when Shoprocket iframes are loaded
     var observer = new MutationObserver(function(mutationsList, observer) {
-      // Check if Shoprocket elements have been added to the DOM
-      for (var mutation of mutationsList) {
-        if (mutation.addedNodes.length) {
-          var shoprocketElementsLoaded = document.querySelectorAll('.sr-products iframe').length;
-          if (shoprocketElementsLoaded) {
-            console.log("Shoprocket content detected");
-            initializeSwiper();
-            observer.disconnect(); // Stop observing after Swiper is initialized
-            break;
-          }
-        }
+      var allIframesLoaded = Array.from(document.querySelectorAll('.sr-products iframe'))
+        .every(iframe => iframe.contentWindow && iframe.contentDocument);
+
+      if (allIframesLoaded) {
+        initializeSwiper(); // Initialize Swiper when all Shoprocket content is ready
+        observer.disconnect(); // Stop observing once done
       }
     });
 
-    observer.observe(targetNode, observerOptions);
+    // Start observing the document for added nodes
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
   </script>
 </body>
 </html>
