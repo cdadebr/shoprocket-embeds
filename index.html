@@ -19,6 +19,17 @@
 
   <!-- Custom CSS to Style Navigation Buttons -->
   <style>
+    .swiper-container {
+      width: 100%;
+    }
+
+    .swiper-slide {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    
     .swiper-button-next,
     .swiper-button-prev {
       background: none;
@@ -105,24 +116,30 @@ style="color: #959595;"
 <!-- Include Swiper JS -->
 <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
 
-<!-- Initialize Swiper -->
-<script>
-var swiper = new Swiper('.swiper-container', {
-slidesPerView: 1, // Number of slides to show
-spaceBetween: 10, // Space between slides in px
-loop: true, // Enable continuous loop mode
-pagination: {
-el: '.swiper-pagination',
-clickable: true,
-},
-navigation: {
-nextEl: '.swiper-button-next',
-prevEl: '.swiper-button-prev',
-},
-});
-</script>
-
 <!-- Include Shoprocket JS -->
 <script async src="https://cdn.shoprocket.io/loader.js"></script>
+
+<!-- Initialize Swiper -->
+<script type="text/javascript">
+    window.addEventListener('Shoprocket.ready', () => {
+      console.log('Shoprocket is ready!');
+
+      // Initialize Swiper
+      var swiper = new Swiper('.swiper-container', {
+        slidesPerView: 1, // Number of slides to show
+        spaceBetween: 10, // Space between slides in px
+        loop: true, // Enable continuous loop mode
+        autoHeight: true, // Enable auto height
+        pagination: {
+          el: '.swiper-pagination',
+          clickable: true,
+        },
+        navigation: {
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
+        },
+      });
+    });
+  </script>
 </body>
 </html>
