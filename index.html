@@ -119,12 +119,12 @@ style="color: #959595;"
 <!-- Include Shoprocket JS -->
 <script async src="https://cdn.shoprocket.io/loader.js"></script>
 
-  <!-- Updated MutationObserver -->
+  <!-- Updated MutationObserver to detect when Shoprocket content is loaded -->
   <script type="text/javascript">
-    // Function to initialize Swiper
     function initializeSwiper() {
       if (window.swiperInitialized) return;
       window.swiperInitialized = true;
+
       console.log("Initializing Swiper...");
 
       // Initialize Swiper
@@ -144,18 +144,22 @@ style="color: #959595;"
       });
     }
 
-    // MutationObserver to detect changes when Shoprocket iframes are loaded
+    // MutationObserver to detect changes when Shoprocket content is loaded
     var observer = new MutationObserver(function(mutationsList, observer) {
-      var allIframesLoaded = Array.from(document.querySelectorAll('.sr-products iframe'))
-        .every(iframe => iframe.contentWindow && iframe.contentDocument);
+      for (var mutation of mutationsList) {
+        // Check for the presence of the Shoprocket product iframe or inner content
+        var shoprocketElementsLoaded = document.querySelectorAll('.sr-element-wrap .sr-item-inner').length;
 
-      if (allIframesLoaded) {
-        initializeSwiper(); // Initialize Swiper when all Shoprocket content is ready
-        observer.disconnect(); // Stop observing once done
+        if (shoprocketElementsLoaded > 0) {
+          console.log("Shoprocket content loaded");
+          initializeSwiper(); // Initialize Swiper when all Shoprocket content is ready
+          observer.disconnect(); // Stop observing once done
+          break;
+        }
       }
     });
 
-    // Start observing the document for added nodes
+    // Start observing the document for added nodes inside the body
     observer.observe(document.body, {
       childList: true,
       subtree: true
